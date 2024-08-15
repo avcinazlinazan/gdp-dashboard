@@ -1,151 +1,242 @@
 import streamlit as st
-import pandas as pd
-import math
-from pathlib import Path
+from PIL import Image
+import datetime
 
-# Set the title and favicon that appear in the Browser's tab bar.
-st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
+
+
+from streamlit_option_menu import option_menu
+
+# st.title("Streamlit Option Menu")
+
+# 2. as horizontal menu  (identation'lara dikkat edin)
+
+selected = option_menu(
+        menu_title=None, #required
+        options=["Anasayfa", "Proje", "Analiz", "Öneriler"], #required
+        icons= ["house", "book", "envelope", "fork"],#optional (isimlerin yanına ikon eklemek için) ,
+        menu_icon="cast", # optional
+        default_index=0, #optional
+        orientation = "horizontal",
+        # önce alttaki styles bolumu olmadan sayfayı run edin
+        #sonra styles kullanarak farkı görun
+        styles={
+                "container": {"padding": "0!important", "background-color": "#fafafa"},
+                "icon": {"color": "#00ffgg", "font-size": "18px"},
+                "nav-link": {
+                    "font-size": "18px",
+                    "text-align": "left",
+                    "margin": "0px",
+                    "--hover-color": "#eee",
+                    "font-family": "Arial"
+                },
+                "nav-link-selected": {"background-color": "#000080"},
+            },
 )
 
-# -----------------------------------------------------------------------------
-# Declare some useful functions.
+# yukardaki selected kısmının seçeneğe bağlı çalışması için alttaki if cümleleri yazılır
+#ilgili menu içinde yapılacaklar alttaki if cümlesinin altında st.title altında yapılabliir
+if selected == "Anasayfa": 
+    st.title(f"Mekansal Birey Kalma Süresi Analizi ")
+    img2=Image.open("techpro.png")
+    st.image(img2, width=300)
+    st.markdown("""  Proje Kamera ile alınan görüntülerden kişilerin
+                 bir alan içinde ne kadar kaldığını bulan ve sonrasında
+                 burdaki verilerle analiz yapan bir sistemdir.""")
+    #today=st.date_input(datetime.datetime.now())
+    st.header("Yapılan çalışmadan bir görüntü")
 
-@st.cache_data
-def get_gdp_data():
-    """Grab GDP data from a CSV file.
+    img1=Image.open("video.png")  
+    st.image(img1, width=600, caption="süre ve kişiler")
+    
+    st.header("Mekansal Birey Kalma Süresi Analizi Bir Market Reyonu için yapılırsa")
+    st.markdown("""
+    ## Akıllı Mağaza Sistemleri
+    Müşteri davranışlarını izleyerek ve analiz ederek mağaza içi operasyonları optimize etmenizi sağlayan teknolojilerdir. Bu tür sistemler, müşteri deneyimini iyileştirmek, personel verimliliğini artırmak ve satışları optimize etmek için birçok avantaj sunar. Akıllı mağaza sistemleri için önerilerim şunlar:
 
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
-    """
+    1. Müşteri Takip ve Analiz Sistemleri:
 
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
-    DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
-    raw_gdp_df = pd.read_csv(DATA_FILENAME)
+    **Kamera Tabanlı İzleme:** Yüksek çözünürlüklü kameralar ve yapay zeka algoritmaları kullanarak mağaza içinde müşterilerin hareketlerini takip edebilirsiniz. Bu sistemler, hangi reyonların daha fazla ilgi gördüğünü, nerelerde yığılma yaşandığını ve müşterilerin mağaza içinde izledikleri yolları analiz etmenize olanak tanır.
 
-    MIN_YEAR = 1960
-    MAX_YEAR = 2022
+    **Isı Haritaları (Heatmaps):** Kamera verileriyle oluşturulan ısı haritaları, mağazada en çok ziyaret edilen bölgeleri ve ilgi gören reyonları belirlemenizi sağlar. Bu veriler, ürün yerleşimini optimize etmek ve müşteri akışını iyileştirmek için kullanılabilir.
 
-    # The data above has columns like:
-    # - Country Name
-    # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
-    # - ...
-    # - GDP for 2022
-    #
-    # ...but I want this instead:
-    # - Country Name
-    # - Country Code
-    # - Year
-    # - GDP
-    #
-    # So let's pivot all those year-columns into two: Year and GDP
-    gdp_df = raw_gdp_df.melt(
-        ['Country Code'],
-        [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
-        'Year',
-        'GDP',
-    )
+    **RFID Takip Sistemleri:** Ürünlere yerleştirilen RFID etiketleri ile ürünlerin hareketleri izlenebilir ve müşterilerin hangi ürünlere ilgi gösterdiği, hangi ürünlerin daha fazla incelendiği veya satın alındığı analiz edilebilir.
+    """)
+    st.header("Mobil Uygulamalar")
 
-    # Convert years from string to integers
-    gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
+    img3=Image.open("mobil.png")
+    st.image(img3, width=600)
+    st.markdown("""
+    2. Kişiselleştirilmiş Müşteri Deneyimi:
 
-    return gdp_df
+    **Dijital Kiosklar:** Müşterilere mağaza içi yönlendirme, ürün bilgileri, kampanyalar ve özel teklifler sunan dijital kiosklar yerleştirilebilir. Bu kiosklar, müşterilerin ilgi alanlarına göre kişiselleştirilmiş öneriler sunabilir.
 
-gdp_df = get_gdp_data()
+    **Mobil Uygulamalar ve Beacons:** Mobil uygulamalar aracılığıyla müşterilere, mağazada gezindikleri sırada özel indirimler veya ürün önerileri sunabilirsiniz. Beacon teknolojisi kullanarak, müşterilerin konumuna göre kişiselleştirilmiş bildirimler gönderebilirsiniz.
+    """)
+    st.header("Akıllı Sepetler")
+    img4=Image.open("sepet.png")
+    st.image(img4, width=600)
+    st.markdown("""
+    3. Self-Checkout Sistemleri:
 
-# -----------------------------------------------------------------------------
-# Draw the actual page
+    **Akıllı Sepetler:** Müşterilerin alışveriş yaparken sepetlerine ekledikleri ürünleri otomatik olarak tanıyan ve toplam fiyatı gösteren akıllı alışveriş sepetleri. Bu, ödeme sürecini hızlandırarak müşterilerin bekleme sürelerini azaltabilir.
 
-# Set the title that appears at the top of the page.
-'''
-# :earth_americas: GDP dashboard
+    **Self-Checkout Kioskları:** Müşterilerin kendi ödemelerini yapmalarına olanak tanıyan self-checkout kioskları, kasada oluşan kuyrukları ve bekleme sürelerini azaltmak için etkili bir çözüm olabilir.
+    4. Envanter Yönetimi ve Stok Takibi:
 
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
-'''
+    **Akıllı Raflar:** Ürün stoklarını otomatik olarak izleyen ve azalan stokları anında bildiren akıllı raflar. Bu sistem, ürünlerin reyonlarda sürekli olarak mevcut olmasını sağlayarak müşteri memnuniyetini artırır.
 
-# Add some spacing
-''
-''
+    **Otomatik Stok Yenileme Sistemleri:** Mağaza içinde bulunan RFID okuyucular ve sensörler aracılığıyla envanter hareketlerini takip edebilir ve stoklar azaldığında otomatik olarak tedarik siparişleri verebilirsiniz.
 
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
+    5. Müşteri ve Personel Etkileşimi:
 
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
+    **Sanal Asistanlar:** Mağaza içinde, müşterilere ürün bulmalarına, özellikleri hakkında bilgi edinmelerine veya mağaza içi kampanyalardan haberdar olmalarına yardımcı olacak yapay zeka destekli sanal asistanlar yerleştirilebilir.
 
-countries = gdp_df['Country Code'].unique()
+    **Çalışan Yönlendirme Sistemleri:** Akıllı mağaza sistemleri, müşteri yoğunluğu olan reyonları tespit ederek personelin bu alanlara yönlendirilmesini sağlayabilir. Bu, müşteri hizmetinin hızını ve kalitesini artırır.
 
-if not len(countries):
-    st.warning("Select at least one country")
+    6. Veri Analitiği ve Raporlama:
 
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
+    **Gerçek Zamanlı Veri Analizi:** Mağaza içinde toplanan verileri gerçek zamanlı olarak analiz edebilen ve yöneticilere bu veriler doğrultusunda anında karar alma imkanı sunan veri analitiği sistemleri.
 
-''
-''
-''
+    **Tahmin Analitiği:** Müşteri davranışlarını ve satış trendlerini tahmin eden yapay zeka destekli analitik araçlar. Bu sistemler, gelecekteki talepleri öngörerek envanter yönetimi ve satış stratejilerini optimize etmek için kullanılabilir.
 
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
-]
+    7. Entegre Mağaza Yönetimi Platformları:
 
-st.header('GDP over time', divider='gray')
+    **Tüm Sistemlerin Entegrasyonu:** Tüm akıllı mağaza teknolojilerini tek bir platformda entegre ederek, mağaza yöneticilerinin her şeyi merkezi bir yerden yönetmesine olanak tanıyacak entegre yönetim platformları kurulabilir. Bu, verimliliği artırır ve mağaza içi operasyonların daha sorunsuz bir şekilde yürütülmesini sağlar.
 
-''
+    Bu akıllı mağaza teknolojileri, müşteri memnuniyetini artırarak ve operasyonel verimliliği iyileştirerek firmanın rekabet gücünü artırabilir. Ayrıca, veri tabanlı karar alma süreçlerini geliştirerek, mağaza içi satışları ve müşteri sadakatini artırmak için değerli içgörüler sunar.
+    """)
+    
 
-st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
-)
+if selected == "Proje":
+    st.title(f"Proje Yapımı")
+    st.header("Mekansal Birey Kalma Süresi Analizi")
+    
+    st.markdown(""" Yapılan projede amaç bir alanda kamera ile alınan görüntülerden kişilerin
+                 bir alan içinde ne kadar kaldığını bulmaktır. Bunun için belirlenen bir alanda kişiler
+                 o alana gelince orada ne kadar kaldığını saniye olarak hesaplar. Kaç kiçi oradan geçtiyse hepsi için bunu yapar.""")
 
-''
-''
+    st.subheader("İlk video kaydı")
+    video1 = open("video.mov","rb")
+    st.video(video1)
+    st.subheader("İşlenmiş video sonucu")
+    st.video('https://www.youtube.com/watch?v=UjbjPzVZkdM')
+if selected == "Analiz":
+    st.title(f"Proje Analizi")
+    
+    st.header("Mekansal Birey Kalma Süresi Analizi")
+    st.markdown("Yapılan çalışmada oluşturulan veriler ile aşağıdaki analizler yapılmıştır.")
+    img1=Image.open("df.png")  
+    st.image(img1)
+    st.subheader("1-Bar Grafiği")
+    img=Image.open("bar.png")
+    st.image(img, width=600, caption="Bar grafiği")
+    st.markdown("""
+        
+
+**1-Bar Grafiği:**
+**Veri Dağılımı:** Bu grafikte, farklı ID'lerin belirli bir alanda ne kadar zaman geçirdiği gösterilmektedir. Yükseklikler, her bir kişinin o alanda kalma süresini (saniye cinsinden) temsil ediyor.
+Belirgin Zaman Farklılıkları: İlk birkaç kişi (1, 2, 3, 5, 7 numaralı ID'ler) daha uzun süreler harcarken, diğer ID'ler (12, 14 gibi) daha az zaman geçirmiş.
+**Veri Sayısı:** Grafik, belirli ID'ler için veriyi göstermekte ve bunlar arasında belirgin bir fark olduğu gözlenmekte. Örneğin, 1, 2 ve 3 numaralı ID'ler yaklaşık olarak 5 saniye harcarken, diğerleri daha az zaman harcamış. """)
+    st.subheader("1-Line Grafiği")
+    img=Image.open("line.png")
+    st.image(img, width=600, caption="Line grafiği")
+    st.markdown("""
+**Trend ve Dalgalanmalar:** Çizgi grafiği, her ID'nin zaman harcama eğilimini göstermektedir. İlk birkaç ID'nin zaman harcama miktarlarında bir azalma görülmekte, daha sonra düşük bir noktaya ulaşıldığında tekrar hafif bir artış gözleniyor.
+**Görsel Akıcılık:** Line grafiği, zaman harcama verilerindeki dalgalanmaları daha akıcı ve net bir şekilde gösteriyor. Özellikle 5. ve 7. ID'ler arasında zaman harcamada belirgin bir azalma var.
+**Belirsizlik Bantları:** Grafikteki gölgeli alanlar, verilerdeki belirsizlik veya dağılımı göstermektedir. Bu da verinin ne kadar güvenilir olduğunu veya ne kadar değişkenlik gösterdiğini anlamaya yardımcı olabilir.""")
+    st.markdown("""**Genel Değerlendirme:**
+Her iki grafik de belirli kişilerin bir alanda harcadığı süreler arasında önemli farklılıklar olduğunu göstermektedir.
+Bar grafiği, bireysel karşılaştırmalar için iyi bir genel bakış sağlarken, çizgi grafiği zaman içinde sürelerin nasıl değiştiğini daha iyi vurguluyor.
+Belirsizlik bantları, çizgi grafiğindeki veri dalgalanmalarını daha iyi anlamaya yardımcı olabilir.
+Bu grafikler, farklı ID'lerin belirli bir alanda geçirdiği süredeki farklılıkları ve bu sürelerin eğilimlerini analiz etmek için kullanılabilir.""")
+if selected == "Öneriler":   
+    st.title(f"Öneriler")
+    
+    st.header("Mekansal Birey Kalma Süresi Analizi")
+
+    img=Image.open("reyon.png")
+    st.image(img, width=600, caption="örnek reyon")
+    st.markdown("""
+
+1. **Reyon Düzeni ve Yerleşim Analizi:**
+
+**Yüksek Bekleme Süresi Olan Bölgeler:**
+                
+Eğer belirli bir reyonun önünde yüksek bekleme süreleri tespit ediliyorsa, bu reyonun müşteriler tarafından ilgi çektiği anlamına gelebilir. Bu tür reyonlarda ürün sergileme teknikleri geliştirilebilir veya müşteri ilgisini daha da artırmak için promosyonlar yapılabilir.
+
+**Düşük Bekleme Süresi Olan Bölgeler:**
+                
+ Aksine, bazı reyonlar önünde düşük bekleme süreleri gözlemleniyorsa, bu reyonların düzeni, ürün seçimi veya yerleşiminde bir problem olabilir. Bu reyonları daha çekici hale getirmek için yeniden düzenlemeler yapılabilir veya ürünlerin yerleri değiştirilebilir.
+
+2. Ürün ve Stok Yönetimi:
+
+**Popüler Ürünler:**
+                
+ Yüksek bekleme süreleri olan reyonlar, popüler ürünlerin bulunduğu alanlar olabilir. Bu durumda, bu ürünlerin stoklarının yeterli olup olmadığı kontrol edilmelidir. Popüler ürünler için stok artırımı veya çeşitlendirme yapılabilir.
+
+**Daha Az İlgi Gören Ürünler:**
+                
+ Düşük bekleme süreleri olan reyonlarda bulunan ürünlerin satış performansı düşük olabilir. Bu ürünler için indirimler veya promosyonlar düzenlenebilir, ürünlerin müşteri ilgisini çekip çekmediği analiz edilebilir. Ya da yüksek bekleme olan reyonlardaki ürünlerle yer değişikliği yapılabilir.
+
+3. Mağaza İçi Deneyim İyileştirmeleri:
+
+**Müşteri Akışını Yönlendirme:** Müşterilerin belirli reyonlarda uzun süre beklemesi, mağaza içinde trafik sıkışıklığına yol açabilir. Müşteri akışını daha etkin bir şekilde yönetmek için reyonların yerleşimi veya mağaza içi yönlendirme levhaları iyileştirilebilir.
+
+**Bekleme Alanları:** Eğer müşteriler belirli reyonlar önünde çok uzun süre bekliyorlarsa, bu alanlara yakın rahat oturma alanları, bilgi ekranları veya ürün tanıtım videoları gibi müşteri deneyimini iyileştirecek unsurlar eklenebilir.
+
+4. Personel ve Müşteri Hizmetleri:
+
+**Personel Dağılımı:**
+                
+ Yüksek bekleme sürelerinin olduğu reyonlar, ekstra personel desteği gerektirebilir. Bu reyonlarda müşterilere daha hızlı ve etkili hizmet vermek için ek personel görevlendirilebilir.
+
+**Müşteri Geri Bildirimi:**
+                
+ Belirli reyonlarda uzun süre bekleyen müşterilere neden bu kadar bekledikleri sorulabilir ve bu bilgiler, müşteri deneyimini iyileştirmek için kullanılabilir.
+
+5. Reklam ve Pazarlama Stratejileri:
+                
+**Veri Destekli Kampanyalar:**
+                
+ Bekleme sürelerine göre en popüler reyonların analiz edilmesi, firma için veri odaklı pazarlama stratejileri geliştirmeye yardımcı olabilir. Örneğin, bu reyonlardaki ürünler için hedeflenmiş reklam kampanyaları düzenlenebilir.
+
+**Müşteri Segmentasyonu:**
+                
+ Bekleme sürelerine göre müşterilerin hangi segmentlerinin hangi reyonlarda daha fazla zaman geçirdiği analiz edilerek, bu segmentlere yönelik özel kampanyalar oluşturulabilir.
+                
+6. Teknolojik Yatırımlar:
+                
+**Akıllı Mağaza Sistemleri:**
+                
+ Mağaza içi müşteri hareketlerini izleyen sensörler ve kameralar gibi teknolojiler kullanılarak, müşteri davranışları daha iyi analiz edilebilir ve bekleme süreleri daha doğru bir şekilde ölçülebilir.
+ 
+**Self-Checkout ve Mobil Ödeme İmkanları:**
+                
+ Uzun bekleme sürelerini azaltmak için müşterilerin hızlı bir şekilde ödemelerini yapabilecekleri self-checkout ve mobil ödeme sistemleri teşvik edilebilir.
+
+Bu öneriler, bekleme süreleri analizinden elde edilen verilere dayalı olarak müşteri memnuniyetini artırmak, satışları optimize etmek ve genel mağaza performansını iyileştirmek için kullanılabilir.  """)
 
 
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
 
-st.header(f'GDP in {to_year}', divider='gray')
+    
 
-''
 
-cols = st.columns(4)
 
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
 
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
 
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
 
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
+
+
+# 
+# img=Image.open("video.png")
+# st.image(img, width=600, caption="süre ve kişiler")
+
+# st.subheader("İlk video kaydı")
+# # video1 = open("video.mov","rb")
+# # st.video(video1)
+
+# st.subheader("İşlenmiş video sonucu")
+
+# st.video(video2)
+
+# 
